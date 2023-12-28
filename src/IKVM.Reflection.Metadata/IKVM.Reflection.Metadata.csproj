@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net6.0;net8.0;net472</TargetFrameworks>
+        <LangVersion>11</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Emit\MetadataAssemblyBuilder.cs" />
+      <Compile Remove="Emit\MetadataAssemblyBuilderFactory.cs" />
+      <Compile Remove="Emit\MetadataFieldBuilder.cs" />
+      <Compile Remove="Emit\MetadataMethodBuilder.cs" />
+      <Compile Remove="Emit\MetadataModuleBuilder.cs" />
+      <Compile Remove="Emit\MetadataParameterBuilder.cs" />
+      <Compile Remove="Emit\MetadataSaveOptions.cs" />
+      <Compile Remove="Emit\MetadataTypeBuilder.cs" />
+      <Compile Remove="Emit\MetadataTypeSignatureConverter.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Reflection.Metadata" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\IKVM.Reflection\IKVM.Reflection.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Emit\" />
+    </ItemGroup>
+
+</Project>

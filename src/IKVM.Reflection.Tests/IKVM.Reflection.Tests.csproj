@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net6.0;net472</TargetFrameworks>
+        <LangVersion>11</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+        <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
+        <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\IKVM.Reflection.Metadata\IKVM.Reflection.Metadata.csproj" />
+      <ProjectReference Include="..\IKVM.Reflection.Reflection\IKVM.Reflection.Reflection.csproj" />
+      <ProjectReference Include="..\IKVM.Reflection\IKVM.Reflection.csproj" />
+    </ItemGroup>
+
+</Project>
