@@ -8,7 +8,7 @@ namespace IKVM.Reflection.Metadata
     /// <summary>
     /// Decodes a metadata signature from a metadata module.
     /// </summary>
-    internal class MetadataSignatureTypeProvider : ISignatureTypeProvider<TypeSignature, MetadataGenericContext>
+    internal class MetadataSignatureTypeProvider : ISignatureTypeProvider<TypeSig, MetadataGenericContext>
     {
 
         readonly MetadataModule module;
@@ -22,7 +22,7 @@ namespace IKVM.Reflection.Metadata
             this.module = module ?? throw new ArgumentNullException(nameof(module));
         }
 
-        public TypeSignature GetArrayType(TypeSignature elementType, ArrayShape shape)
+        public TypeSig GetArrayType(TypeSig elementType, ArrayShape shape)
         {
             var dimensions = new ArrayDimension[shape.Rank];
             for (int i = 0; i < shape.Rank; i++)
@@ -31,67 +31,67 @@ namespace IKVM.Reflection.Metadata
             return new ArrayTypeSignature(elementType, dimensions);
         }
 
-        public TypeSignature GetByReferenceType(TypeSignature elementType)
+        public TypeSig GetByReferenceType(TypeSig elementType)
         {
             return new ByRefTypeSignature(elementType);
         }
 
-        public TypeSignature GetFunctionPointerType(MethodSignature<TypeSignature> signature)
+        public TypeSig GetFunctionPointerType(MethodSignature<TypeSig> signature)
         {
             return new FunctionPointerTypeSignature(module.GetMethodSignature(signature));
         }
 
-        public TypeSignature GetGenericInstantiation(TypeSignature genericType, ImmutableArray<TypeSignature> typeArguments)
+        public TypeSig GetGenericInstantiation(TypeSig genericType, ImmutableArray<TypeSig> typeArguments)
         {
             return new GenericInstanceTypeSignature(genericType, typeArguments);
         }
 
-        public TypeSignature GetGenericTypeParameter(MetadataGenericContext genericContext, int index)
+        public TypeSig GetGenericTypeParameter(MetadataGenericContext genericContext, int index)
         {
             return new GenericParameterTypeSignature(GenericParameterScope.Type, index);
         }
 
-        public TypeSignature GetGenericMethodParameter(MetadataGenericContext genericContext, int index)
+        public TypeSig GetGenericMethodParameter(MetadataGenericContext genericContext, int index)
         {
             return new GenericParameterTypeSignature(GenericParameterScope.Method, index);
         }
 
-        public TypeSignature GetModifiedType(TypeSignature modifier, TypeSignature unmodifiedType, bool isRequired)
+        public TypeSig GetModifiedType(TypeSig modifier, TypeSig unmodifiedType, bool isRequired)
         {
             return new CustomModifierTypeSignature(unmodifiedType, modifier, isRequired);
         }
 
-        public TypeSignature GetPinnedType(TypeSignature elementType)
+        public TypeSig GetPinnedType(TypeSig elementType)
         {
-            return new PinnedTypeSignature(elementType);
+            return new PinnedTypeSig(elementType);
         }
 
-        public TypeSignature GetPointerType(TypeSignature elementType)
+        public TypeSig GetPointerType(TypeSig elementType)
         {
-            return new PointerTypeSignature(elementType);
+            return new PointerTypeSig(elementType);
         }
 
-        public TypeSignature GetPrimitiveType(System.Reflection.Metadata.PrimitiveTypeCode typeCode)
+        public TypeSig GetPrimitiveType(System.Reflection.Metadata.PrimitiveTypeCode typeCode)
         {
-            return new TypeRefTypeSignature(module.GetOrCreatePrimitiveTypeRef(typeCode));
+            return new TypeDefOrRefSignature(module.GetOrCreatePrimitiveTypeRef(typeCode));
         }
 
-        public TypeSignature GetSZArrayType(TypeSignature elementType)
+        public TypeSig GetSZArrayType(TypeSig elementType)
         {
-            return new SzArrayTypeSignature(elementType);
+            return new SzArrayTypeSig(elementType);
         }
 
-        public TypeSignature GetTypeFromDefinition(MetadataReader reader, TypeDefinitionHandle handle, byte rawTypeKind)
+        public TypeSig GetTypeFromDefinition(MetadataReader reader, TypeDefinitionHandle handle, byte rawTypeKind)
         {
             return new TypeDefTypeSignature(module.GetOrCreateType(handle));
         }
 
-        public TypeSignature GetTypeFromReference(MetadataReader reader, TypeReferenceHandle handle, byte rawTypeKind)
+        public TypeSig GetTypeFromReference(MetadataReader reader, TypeReferenceHandle handle, byte rawTypeKind)
         {
-            return new TypeRefTypeSignature(module.GetOrCreateTypeRef(handle));
+            return new TypeDefOrRefSignature(module.GetOrCreateTypeRef(handle));
         }
 
-        public TypeSignature GetTypeFromSpecification(MetadataReader reader, MetadataGenericContext genericContext, TypeSpecificationHandle handle, byte rawTypeKind)
+        public TypeSig GetTypeFromSpecification(MetadataReader reader, MetadataGenericContext genericContext, TypeSpecificationHandle handle, byte rawTypeKind)
         {
             return module.DecodeTypeSignature((EntityHandle)handle, genericContext);
         }

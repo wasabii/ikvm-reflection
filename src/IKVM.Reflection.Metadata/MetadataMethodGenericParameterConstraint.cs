@@ -7,14 +7,14 @@ namespace IKVM.Reflection.Metadata
     /// <summary>
     /// Describes a constraint on a generic parameter.
     /// </summary>
-    internal class MetadataMethodGenericParameterConstraint : IGenericParameterConstraint
+    internal class MetadataMethodGenericParameterConstraint : GenericParameterConstraint
     {
 
         readonly MetadataModule module;
         readonly MetadataMethod method;
-        readonly GenericParameterConstraint def;
+        readonly System.Reflection.Metadata.GenericParameterConstraint def;
 
-        TypeSignature? constraint;
+        TypeSig? constraint;
 
         /// <summary>
         /// Initializes a new instance.
@@ -33,7 +33,7 @@ namespace IKVM.Reflection.Metadata
         /// <summary>
         /// Gets the type to which this parameter is constrained.
         /// </summary>
-        public TypeSignature Constraint => LazyUtil.Get(ref constraint, () => module.DecodeTypeSignature(def.Type, new MetadataGenericContext(method.ParentType, method)));
+        public TypeSig Constraint => LazyUtil.Get(ref constraint, () => module.DecodeTypeSignature(def.Type, new MetadataGenericContext(method.ParentType, method)));
 
     }
 

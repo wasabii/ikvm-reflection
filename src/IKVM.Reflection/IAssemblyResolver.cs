@@ -17,7 +17,7 @@ namespace IKVM.Reflection
         /// <param name="requestingModule"></param>
         /// <param name="assembly"></param>
         /// <returns></returns>
-        bool TryResolveAssembly(IAssemblyContext context, AssemblyName name, IModule? requestingModule, out IAssembly? assembly);
+        bool TryResolveAssembly(IAssemblyContext context, AssemblyName name, ModuleDef? requestingModule, out AssemblyDef? assembly);
 
     }
 

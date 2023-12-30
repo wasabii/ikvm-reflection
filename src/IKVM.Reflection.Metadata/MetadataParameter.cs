@@ -31,7 +31,7 @@ namespace IKVM.Reflection.Metadata
         /// </summary>
         public MetadataModule Module => method.Module;
 
-        IModule IParameter.Module => Module;
+        ModuleDef IParameter.Module => Module;
 
         /// <summary>
         /// Gets the method on which this parameter is defined.
@@ -47,7 +47,7 @@ namespace IKVM.Reflection.Metadata
         public ParameterAttributes Attributes => parameter.Attributes;
 
         /// <inheritdoc />
-        public TypeSignature ParameterType => throw new NotImplementedException();
+        public TypeSig ParameterType => throw new NotImplementedException();
 
     }
 

@@ -12,7 +12,7 @@ namespace IKVM.Reflection.Emit
         /// <summary>
         /// Gets a reference to the type being written to.
         /// </summary>
-        IType Type { get; }
+        TypeDef Type { get; }
 
         /// <summary>
         /// Creates a new field.
@@ -21,7 +21,7 @@ namespace IKVM.Reflection.Emit
         /// <param name="attributes"></param>
         /// <param name="signature"></param>
         /// <returns></returns>
-        IFieldBuilder CreateField(string name, FieldAttributes attributes, TypeSignature signature);
+        IFieldBuilder CreateField(string name, FieldAttributes attributes, TypeSig signature);
 
         /// <summary>
         /// Creates a new method.
@@ -31,7 +31,7 @@ namespace IKVM.Reflection.Emit
         /// <param name="implAttributes"></param>
         /// <param name="returnType"></param>
         /// <returns></returns>
-        IMethodBuilder CreateMethod(string name, MethodAttributes attributes, MethodImplAttributes implAttributes, TypeSignature returnType);
+        IMethodBuilder CreateMethod(string name, MethodAttributes attributes, MethodImplAttributes implAttributes, TypeSig returnType);
 
     }
 

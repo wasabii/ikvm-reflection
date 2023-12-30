@@ -7,7 +7,7 @@
     readonly struct MetadataGenericContext
     {
 
-        readonly MetadataType? type;
+        readonly MetadataTypeDef? type;
         readonly MetadataMethod? method;
 
         /// <summary>
@@ -15,7 +15,7 @@
         /// </summary>
         /// <param name="type"></param>
         /// <param name="method"></param>
-        public MetadataGenericContext(MetadataType? type, MetadataMethod? method)
+        public MetadataGenericContext(MetadataTypeDef? type, MetadataMethod? method)
         {
             this.type = type;
             this.method = method;
@@ -24,7 +24,7 @@
         /// <summary>
         /// Gets the object responsible for providing type arguments defined by the current generic type instantiation.
         /// </summary>
-        public MetadataType? Type => type;
+        public MetadataTypeDef? Type => type;
 
         /// <summary>
         /// Gets the object responsible for providing type arguments defined by the current generic method instantiation.

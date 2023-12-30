@@ -14,16 +14,14 @@ namespace IKVM.Reflection.Metadata
     /// <summary>
     /// Represents a module definition loaded from metadata.
     /// </summary>
-    internal class MetadataModule : IModule, IDisposable
+    internal sealed class MetadataModule : ModuleDef, IDisposable
     {
 
         readonly MetadataAssembly assembly;
         readonly PEReader pe;
         readonly MetadataReader reader;
         readonly string location;
-        readonly ModuleDefinition def;
-
-        readonly MetadataGlobalType globalType;
+        readonly System.Reflection.Metadata.ModuleDefinition def;
 
         readonly MetadataPrimitiveTypeRef _VoidTypeRef;
         readonly MetadataPrimitiveTypeRef _BooleanTypeRef;
@@ -44,23 +42,16 @@ namespace IKVM.Reflection.Metadata
         readonly MetadataPrimitiveTypeRef _UIntPtrTypeRef;
         readonly MetadataPrimitiveTypeRef _ObjectTypeRef;
 
-        MetadataType[]? types;
-        MetadataField[]? fields;
-        MetadataMethod[]? methods;
+        MetadataTypeDef[]? types;
 
         readonly ConcurrentDictionary<AssemblyReferenceHandle, MetadataAssemblyRef> assemblyRefByHandleMap = new();
-        readonly ConcurrentDictionary<ModuleReferenceHandle, MetadataModuleRef> moduleRefByHandleMap = new();
         readonly ConcurrentDictionary<TypeReferenceHandle, MetadataTypeRef> typeRefByHandleMap = new();
         readonly ConcurrentDictionary<MemberReferenceHandle, MetadataFieldRef> fieldRefByHandleMap = new();
         readonly ConcurrentDictionary<MemberReferenceHandle, MetadataMethodRef> methodRefByHandleMap = new();
 
-        readonly ConcurrentDictionary<TypeDefinitionHandle, MetadataType> typeByHandleMap = new();
-        readonly ConcurrentDictionary<FieldDefinitionHandle, MetadataField> fieldByHandleMap = new();
+        readonly ConcurrentDictionary<TypeDefinitionHandle, MetadataTypeDef> typeByHandleMap = new();
+        readonly ConcurrentDictionary<FieldDefinitionHandle, MetadataFieldDef> fieldByHandleMap = new();
         readonly ConcurrentDictionary<MethodDefinitionHandle, MetadataMethod> methodByHandleMap = new();
-
-        readonly ConcurrentDictionary<(string, string), MetadataType?> typeByNameMap = new();
-        readonly ConcurrentDictionary<string, MetadataField?> fieldByNameMap = new();
-        readonly ConcurrentDictionary<string, MetadataMethod?> methodByNameMap = new();
 
         /// <summary>
         /// Initializes a new instance.
@@ -76,10 +67,7 @@ namespace IKVM.Reflection.Metadata
             this.pe = pe ?? throw new ArgumentNullException(nameof(pe));
             this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
             this.location = location ?? throw new ArgumentNullException(nameof(location));
-
-            // initialize module
             def = reader.GetModuleDefinition();
-            globalType = new MetadataGlobalType(this);
 
             // cache primitive types
             _VoidTypeRef = new MetadataPrimitiveTypeRef(this, PrimitiveTypeCode.Void);
@@ -103,12 +91,7 @@ namespace IKVM.Reflection.Metadata
         }
 
         /// <inheritdoc />
-        public MetadataAssembly Assembly => assembly;
-
-        /// <summary>
-        /// Gets the assembly of the module.
-        /// </summary>
-        IAssembly IModule.Assembly => Assembly;
+        public override MetadataAssembly Assembly => assembly;
 
         /// <summary>
         /// Gets the metadata reader responsible for this module.
@@ -118,158 +101,32 @@ namespace IKVM.Reflection.Metadata
         /// <summary>
         /// Gets the location of this module.
         /// </summary>
-        public string Location => location;
+        public override string Location => location;
 
         /// <inheritdoc />
-        public string Name => reader.GetString(def.Name);
+        public override string Name => reader.GetString(def.Name);
 
         /// <inheritdoc />
-        public Guid Mvid => reader.GetGuid(def.Mvid);
+        public override Guid Mvid => reader.GetGuid(def.Mvid);
 
         /// <summary>
         /// Gets the types of the assembly.
         /// </summary>
-        internal MetadataType[] Types => LazyUtil.Get(ref types, LoadTypes);
-
-        /// <summary>
-        /// Gets the types of the assembly.
-        /// </summary>
-        IReadOnlyList<IType> IModule.Types => Types;
+        public override IReadOnlyList<MetadataTypeDef> Types => LazyUtil.Get(ref types, LoadTypes);
 
         /// <summary>
         /// Loads the types of the assembly.
         /// </summary>
         /// <returns></returns>
-        MetadataType[] LoadTypes()
+        MetadataTypeDef[] LoadTypes()
         {
-            var l = new MetadataType[reader.TypeDefinitions.Count];
+            var l = new MetadataTypeDef[reader.TypeDefinitions.Count];
 
             int i = 0;
             foreach (var h in reader.TypeDefinitions)
                 l[i++] = GetOrCreateType(h);
 
             return l;
-        }
-
-        /// <summary>
-        /// Attempts to resolve the specified type by name.
-        /// </summary>
-        /// <param name="namespaceName"></param>
-        /// <param name="name"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        internal bool TryFindType(string namespaceName, string name, out MetadataType? type) => (type = typeByNameMap.GetOrAdd((namespaceName, name), _ => Types.FirstOrDefault(i => _.Item1 == namespaceName && i.Name == _.Item2))) != null;
-
-        /// <summary>
-        /// Attempts to resolve the specified type by name.
-        /// </summary>
-        /// <param name="namespaceName"></param>
-        /// <param name="name"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        bool IModule.TryFindType(string namespaceName, string name, out IType? type)
-        {
-            var r = TryFindType(namespaceName, name, out var t);
-            type = t;
-            return r;
-        }
-
-        /// <summary>
-        /// Gets the methods of the module.
-        /// </summary>
-        internal MetadataMethod[] Methods => LazyUtil.Get(ref methods, LoadMethods);
-
-        /// <summary>
-        /// Gets the methods of the module.
-        /// </summary>
-        IReadOnlyList<IMethod> IModule.Methods => Methods;
-
-        /// <summary>
-        /// Loads the methods of the module.
-        /// </summary>
-        /// <returns></returns>
-        MetadataMethod[] LoadMethods()
-        {
-            var l = new MetadataMethod[reader.MethodDefinitions.Count];
-
-            int i = 0;
-            foreach (var h in reader.MethodDefinitions)
-                l[i++] = GetOrCreateMethod(h);
-
-            return l;
-        }
-
-        /// <summary>
-        /// Attempts to resolve the specified method by name.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="method"></param>
-        /// <returns></returns>
-        internal bool TryFindMethod(string name, out MetadataMethod? method)
-        {
-            return (method = methodByNameMap.GetOrAdd((name), _ => Methods.FirstOrDefault(i => _ == i.Name))) != null;
-        }
-
-        /// <summary>
-        /// Attempts to resolve the specified method by name.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="method"></param>
-        /// <returns></returns>
-        bool IModule.TryFindMethod(string name, out IMethod? method)
-        {
-            var r = TryFindMethod(name, out var t);
-            method = t;
-            return r;
-        }
-
-        /// <summary>
-        /// Gets the fields of the module.
-        /// </summary>
-        internal MetadataField[] Fields => LazyUtil.Get(ref fields, LoadFields);
-
-        /// <summary>
-        /// Gets the fields of the module.
-        /// </summary>
-        IReadOnlyList<IField> IModule.Fields => Fields;
-
-        /// <summary>
-        /// Loads the fields of the module.
-        /// </summary>
-        /// <returns></returns>
-        MetadataField[] LoadFields()
-        {
-            var l = new MetadataField[reader.FieldDefinitions.Count];
-
-            int i = 0;
-            foreach (var h in reader.FieldDefinitions)
-                l[i++] = GetOrCreateField(h);
-
-            return l;
-        }
-
-        /// <summary>
-        /// Attempts to resolve the specified field by name.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="field"></param>
-        /// <returns></returns>
-        internal bool TryFindField(string name, out MetadataField? field)
-        {
-            return (field = fieldByNameMap.GetOrAdd(name, _ => Fields.FirstOrDefault(i => _ == i.Name))) != null;
-        }
-
-        /// <summary>
-        /// Attempts to resolve the specified field by name.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="field"></param>
-        /// <returns></returns>
-        bool IModule.TryFindField(string name, out IField? field)
-        {
-            var r = TryFindField(name, out var t);
-            field = t;
-            return r;
         }
 
         /// <summary>
@@ -290,18 +147,6 @@ namespace IKVM.Reflection.Metadata
             Debug.Assert(handle.IsNil == false);
 
             return assemblyRefByHandleMap.GetOrAdd(handle, _ => new MetadataAssemblyRef(this, _));
-        }
-
-        /// <summary>
-        /// Creates a new module reference instance that resides in this module.
-        /// </summary>
-        /// <param name="handle"></param>
-        /// <returns></returns>
-        internal MetadataModuleRef GetOrCreateModuleRef(ModuleReferenceHandle handle)
-        {
-            Debug.Assert(handle.IsNil == false);
-
-            return moduleRefByHandleMap.GetOrAdd(handle, _ => new MetadataModuleRef(this, _));
         }
 
         /// <summary>
@@ -374,11 +219,11 @@ namespace IKVM.Reflection.Metadata
         /// <param name="handle"></param>
         /// <param name="declaringType"></param>
         /// <returns></returns>
-        internal MetadataType GetOrCreateType(TypeDefinitionHandle handle, MetadataType? declaringType)
+        internal MetadataTypeDef GetOrCreateType(TypeDefinitionHandle handle, MetadataTypeDef? declaringType)
         {
             Debug.Assert(handle.IsNil == false);
 
-            return typeByHandleMap.GetOrAdd(handle, _ => new MetadataType(this, declaringType, _));
+            return typeByHandleMap.GetOrAdd(handle, _ => new MetadataTypeDef(this, declaringType, _));
         }
 
         /// <summary>
@@ -386,7 +231,7 @@ namespace IKVM.Reflection.Metadata
         /// </summary>
         /// <param name="handle"></param>
         /// <returns></returns>
-        internal MetadataType GetOrCreateType(TypeDefinitionHandle handle)
+        internal MetadataTypeDef GetOrCreateType(TypeDefinitionHandle handle)
         {
             Debug.Assert(handle.IsNil == false);
 
@@ -401,11 +246,11 @@ namespace IKVM.Reflection.Metadata
         /// <param name="handle"></param>
         /// <param name="declaringType"></param>
         /// <returns></returns>
-        internal MetadataField GetOrCreateField(FieldDefinitionHandle handle, MetadataType declaringType)
+        internal MetadataFieldDef GetOrCreateField(FieldDefinitionHandle handle, MetadataTypeDef declaringType)
         {
             Debug.Assert(handle.IsNil == false);
 
-            return fieldByHandleMap.GetOrAdd(handle, _ => new MetadataField(this, declaringType, _));
+            return fieldByHandleMap.GetOrAdd(handle, _ => new MetadataFieldDef(this, declaringType, _));
         }
 
         /// <summary>
@@ -413,7 +258,7 @@ namespace IKVM.Reflection.Metadata
         /// </summary>
         /// <param name="handle"></param>
         /// <returns></returns>
-        internal MetadataField GetOrCreateField(FieldDefinitionHandle handle)
+        internal MetadataFieldDef GetOrCreateField(FieldDefinitionHandle handle)
         {
             Debug.Assert(handle.IsNil == false);
 
@@ -426,13 +271,13 @@ namespace IKVM.Reflection.Metadata
         /// Creates a new method instance that resides in this module.
         /// </summary>
         /// <param name="handle"></param>
-        /// <param name="parentType"></param>
+        /// <param name="declaringType"></param>
         /// <returns></returns>
-        internal MetadataMethod GetOrCreateMethod(MethodDefinitionHandle handle, MetadataType? parentType)
+        internal MetadataMethod GetOrCreateMethod(MethodDefinitionHandle handle, MetadataTypeDef declaringType)
         {
             Debug.Assert(handle.IsNil == false);
 
-            return methodByHandleMap.GetOrAdd(handle, _ => new MetadataMethod(this, parentType, _));
+            return methodByHandleMap.GetOrAdd(handle, _ => new MetadataMethod(this, declaringType, _));
         }
 
         /// <summary>
@@ -446,31 +291,31 @@ namespace IKVM.Reflection.Metadata
 
             var d = reader.GetMethodDefinition(handle);
             var t = d.GetDeclaringType();
-            return GetOrCreateMethod(handle, t.IsNil ? null : GetOrCreateType(t));
+            return GetOrCreateMethod(handle, GetOrCreateType(t));
         }
 
         /// <summary>
-        /// Decodes a handle into a <see cref="TypeSignature"/>.
+        /// Decodes a handle into a <see cref="TypeSig"/>.
         /// </summary>
         /// <param name="handle"></param>
         /// <param name="context"></param>
         /// <returns></returns>
         /// <exception cref="BadImageFormatException"></exception>
-        internal TypeSignature DecodeTypeSignature(EntityHandle handle, MetadataGenericContext context)
+        internal TypeSig DecodeTypeSignature(EntityHandle handle, MetadataGenericContext context)
         {
             Debug.Assert(handle.IsNil == false);
 
             return handle.Kind switch
             {
                 HandleKind.TypeDefinition => new TypeDefTypeSignature(GetOrCreateType((TypeDefinitionHandle)handle)),
-                HandleKind.TypeReference => new TypeRefTypeSignature(GetOrCreateTypeRef((TypeReferenceHandle)handle)),
+                HandleKind.TypeReference => new TypeDefOrRefSignature(GetOrCreateTypeRef((TypeReferenceHandle)handle)),
                 HandleKind.TypeSpecification => Reader.GetTypeSpecification((TypeSpecificationHandle)handle).DecodeSignature(new MetadataSignatureTypeProvider(this), context),
                 _ => throw new BadImageFormatException("Entity must be a TypeDef, TypeRef or TypeSpec."),
             };
         }
 
         /// <summary>
-        /// Decodes a handle into a <see cref="TypeSignature"/>.
+        /// Decodes a handle into a <see cref="TypeSig"/>.
         /// </summary>
         /// <param name="handle"></param>
         /// <param name="context"></param>
@@ -487,7 +332,7 @@ namespace IKVM.Reflection.Metadata
         }
 
         /// <summary>
-        /// Decodes a handle into a <see cref="TypeSignature"/>.
+        /// Decodes a handle into a <see cref="TypeSig"/>.
         /// </summary>
         /// <param name="handle"></param>
         /// <param name="context"></param>
@@ -508,9 +353,9 @@ namespace IKVM.Reflection.Metadata
         /// </summary>
         /// <param name="signature"></param>
         /// <returns></returns>
-        internal MethodSignature GetMethodSignature(MethodSignature<TypeSignature> signature)
+        internal MethodSignature GetMethodSignature(MethodSignature<TypeSig> signature)
         {
-            return new MethodSignature(GetCallingConventionAttributes(signature.Header.CallingConvention), signature.GenericParameterCount, signature.ReturnType, signature.ParameterTypes.ToArray());
+            return new MethodSig(GetCallingConventionAttributes(signature.Header.CallingConvention), signature.GenericParameterCount, signature.ReturnType, signature.ParameterTypes.ToArray());
         }
 
         /// <summary>

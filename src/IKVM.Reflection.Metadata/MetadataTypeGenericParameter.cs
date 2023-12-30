@@ -9,12 +9,12 @@ namespace IKVM.Reflection.Metadata
     /// <summary>
     /// Describes a generic parameter available on a metadata type.
     /// </summary>
-    internal class MetadataTypeGenericParameter : IGenericParameter
+    internal class MetadataTypeGenericParameter : GenericParameter
     {
 
         readonly MetadataModule module;
-        readonly MetadataType type;
-        readonly GenericParameter parameter;
+        readonly MetadataTypeDef type;
+        readonly System.Reflection.Metadata.GenericParameter parameter;
 
         MetadataTypeGenericParameterConstraint[]? constraints;
 
@@ -24,7 +24,7 @@ namespace IKVM.Reflection.Metadata
         /// <param name="module"></param>
         /// <param name="type"></param>
         /// <param name="handle"></param>
-        public MetadataTypeGenericParameter(MetadataModule module, MetadataType type, GenericParameterHandle handle)
+        public MetadataTypeGenericParameter(MetadataModule module, MetadataTypeDef type, GenericParameterHandle handle)
         {
             this.module = module ?? throw new ArgumentNullException(nameof(module));
             this.type = type ?? throw new ArgumentNullException(nameof(type));
@@ -44,7 +44,7 @@ namespace IKVM.Reflection.Metadata
         /// <summary>
         /// Gets the constraints of this generic parameter.
         /// </summary>
-        public IReadOnlyList<IGenericParameterConstraint> Constraints => LazyUtil.Get(ref constraints, LoadConstraints);
+        public IReadOnlyList<GenericParameterConstraint> Constraints => LazyUtil.Get(ref constraints, LoadConstraints);
 
         /// <summary>
         /// Loads the constraints of this generic parameter.

@@ -12,12 +12,12 @@ namespace IKVM.Reflection
         /// <summary>
         /// Gets the module from which this event was loaded from.
         /// </summary>
-        IModule Module { get; }
+        ModuleDef Module { get; }
 
         /// <summary>
         /// Gets the type that contains the event.
         /// </summary>
-        IType? ParentType { get; }
+        TypeDef? ParentType { get; }
 
         /// <summary>
         /// Gets the name of the event.
@@ -37,7 +37,7 @@ namespace IKVM.Reflection
         /// <summary>
         /// Gets the type of the event.
         /// </summary>
-        TypeSignature EventType { get; }
+        TypeSig EventType { get; }
 
         /// <summary>
         /// Gets the add method implementation.

@@ -14,7 +14,7 @@ namespace IKVM.Reflection.Metadata
     {
 
         readonly MetadataModule module;
-        readonly MetadataType parentType;
+        readonly MetadataTypeDef parentType;
         readonly PropertyDefinitionHandle handle;
         readonly PropertyDefinition def;
 
@@ -28,7 +28,7 @@ namespace IKVM.Reflection.Metadata
         /// <param name="module"></param>
         /// <param name="declaringType"></param>
         /// <param name="handle"></param>
-        public MetadataProperty(MetadataModule module, MetadataType declaringType, PropertyDefinitionHandle handle)
+        public MetadataProperty(MetadataModule module, MetadataTypeDef declaringType, PropertyDefinitionHandle handle)
         {
             Debug.Assert(handle.IsNil == false);
             this.module = module ?? throw new ArgumentNullException(nameof(module));
@@ -45,17 +45,17 @@ namespace IKVM.Reflection.Metadata
         /// <summary>
         /// Gets the parent module of this property.
         /// </summary>
-        IModule IProperty.Module => Module;
+        ModuleDef IProperty.Module => Module;
 
         /// <summary>
         /// Gets the parent type of this property.
         /// </summary>
-        public MetadataType ParentType => parentType;
+        public MetadataTypeDef ParentType => parentType;
 
         /// <summary>
         /// Gets the parent type of this property.
         /// </summary>
-        IType IProperty.ParentType => ParentType;
+        TypeDef IProperty.ParentType => ParentType;
 
         /// <summary>
         /// Gets the name of this property.
@@ -80,12 +80,12 @@ namespace IKVM.Reflection.Metadata
         /// <summary>
         /// Gets the type signature of this property.
         /// </summary>
-        public TypeSignature PropertyType => Signature.ReturnType;
+        public TypeSig PropertyType => Signature.ReturnType;
 
         /// <summary>
         /// Gets the parameter types of the property.
         /// </summary>
-        public IReadOnlyList<TypeSignature> ParameterTypes => Signature.ParameterTypes;
+        public IReadOnlyList<TypeSig> ParameterTypes => Signature.ParameterTypes;
 
         /// <summary>
         /// Gets the get method.

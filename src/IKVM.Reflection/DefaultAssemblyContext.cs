@@ -15,7 +15,7 @@ namespace IKVM.Reflection
 
         readonly AssemblyContextOptions options;
         readonly IAssemblyResolver[] resolvers;
-        readonly ConcurrentDictionary<AssemblyName, IAssembly?> assemblyByName = new();
+        readonly ConcurrentDictionary<AssemblyName, AssemblyDef?> assemblyByName = new();
 
         /// <summary>
         /// Initializes a new instance.
@@ -39,7 +39,7 @@ namespace IKVM.Reflection
         /// <param name="name"></param>
         /// <param name="requestingModule"></param>
         /// <returns></returns>
-        public bool TryResolveAssembly(AssemblyName name, IModule? requestingModule, out IAssembly? assembly)
+        public bool TryResolveAssembly(AssemblyName name, ModuleDef? requestingModule, out AssemblyDef? assembly)
         {
             if (name is null)
                 throw new ArgumentNullException(nameof(name));
@@ -54,7 +54,7 @@ namespace IKVM.Reflection
         /// <param name="name"></param>
         /// <param name="requestingModule"></param>
         /// <returns></returns>
-        IAssembly? ResolveAssemblyImpl(AssemblyName name, IModule? requestingModule)
+        AssemblyDef? ResolveAssemblyImpl(AssemblyName name, ModuleDef? requestingModule)
         {
             foreach (var resolver in resolvers)
                 if (resolver.TryResolveAssembly(this, name, requestingModule, out var h))
@@ -72,7 +72,7 @@ namespace IKVM.Reflection
         /// <param name="requestingModule"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public bool TryResolveType(AssemblyName assemblyName, string namespaceName, string name, IModule? requestingModule, out IType? type)
+        public bool TryResolveType(AssemblyName assemblyName, string namespaceName, string name, ModuleDef? requestingModule, out TypeDef? type)
         {
             type = null;
 

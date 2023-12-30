@@ -14,7 +14,7 @@ namespace IKVM.Reflection.Metadata
         readonly MetadataModule module;
         readonly AssemblyReference reference;
 
-        IAssembly? resolved;
+        AssemblyDef? resolved;
 
         /// <summary>
         /// Initializes a new instance.
@@ -38,7 +38,7 @@ namespace IKVM.Reflection.Metadata
         /// <param name="def"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public bool TryResolve(out IAssembly? def)
+        public bool TryResolve(out AssemblyDef? def)
         {
             // check for cached lookup
             def = resolved;

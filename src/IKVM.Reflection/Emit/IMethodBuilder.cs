@@ -21,7 +21,7 @@ namespace IKVM.Reflection.Emit
         /// <param name="attributes"></param>
         /// <param name="parameterType"></param>
         /// <returns></returns>
-        IParameterBuilder CreateParameter(string name, ParameterAttributes attributes, TypeSignature parameterType);
+        IParameterBuilder CreateParameter(string name, ParameterAttributes attributes, TypeSig parameterType);
 
     }
 

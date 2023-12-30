@@ -23,7 +23,7 @@ namespace IKVM.Reflection
         /// <param name="requestingModule"></param>
         /// <param name="assembly"></param>
         /// <returns></returns>
-        bool TryResolveAssembly(AssemblyName name, IModule? requestingModule, out IAssembly? assembly);
+        bool TryResolveAssembly(AssemblyName name, ModuleDef? requestingModule, out AssemblyDef? assembly);
 
         /// <summary>
         /// Attempts to resolve the specified type within the specified assembly.
@@ -34,7 +34,7 @@ namespace IKVM.Reflection
         /// <param name="requestingModule"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        bool TryResolveType(AssemblyName assemblyName, string namespaceName, string name, IModule? requestingModule, out IType? type);
+        bool TryResolveType(AssemblyName assemblyName, string namespaceName, string name, ModuleDef? requestingModule, out TypeDef? type);
 
         /// <summary>
         /// Creates a new assembly within the context.

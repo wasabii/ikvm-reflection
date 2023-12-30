@@ -8,7 +8,7 @@ namespace IKVM.Reflection.Metadata
     /// <summary>
     /// Holds a reference to a type derived from metadata.
     /// </summary>
-    internal class MetadataMethodRef : IMethodRef
+    internal class MetadataMethodRef : MethodRef
     {
 
         readonly MetadataModule module;
@@ -37,7 +37,7 @@ namespace IKVM.Reflection.Metadata
         /// <summary>
         /// Gets the reference to the assembly that holds this method.
         /// </summary>
-        IAssemblyRef IMethodRef.Assembly => ParentType?.Assembly ?? ParentModule?.Assembly ?? throw new InvalidOperationException("MethodRef does not have either a parent type or a parent module.");
+        IAssemblyRef MethodRef.Assembly => ParentType?.Assembly ?? ParentModule?.Assembly ?? throw new InvalidOperationException("MethodRef does not have either a parent type or a parent module.");
 
         /// <summary>
         /// Gets the reference to the module that declares the method.

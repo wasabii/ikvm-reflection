@@ -15,14 +15,14 @@ namespace IKVM.Reflection
         /// </summary>
         /// <param name="builder">The builder to append the name to.</param>
         /// <param name="signature">The type to obtain the full name for.</param>
-        public static void AppendTypeDisplayName(StringBuilder builder, TypeSignature signature)
+        public static void AppendTypeDisplayName(StringBuilder builder, TypeSig signature)
         {
             if (signature is null)
                 throw new ArgumentNullException(nameof(signature));
             if (builder is null)
                 throw new ArgumentNullException(nameof(builder));
 
-            signature.AcceptVisitor(TypeSignatureNameVisitor.Instance, builder);
+            signature.AcceptVisitor(TypeSigNameVisitor.Instance, builder);
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace IKVM.Reflection
         /// </summary>
         /// <param name="signature">The type to obtain the full name for.</param>
         /// <returns>The full name.</returns>
-        public static string GetTypeDisplayName(TypeSignature signature)
+        public static string GetTypeDisplayName(TypeSig signature)
         {
             if (signature is null)
                 throw new ArgumentNullException(nameof(signature));
@@ -55,7 +55,7 @@ namespace IKVM.Reflection
             if (signature.HasThis)
                 builder.Append("instance ");
 
-            signature.ReturnType.AcceptVisitor(TypeSignatureNameVisitor.Instance, builder);
+            signature.ReturnType.AcceptVisitor(TypeSigNameVisitor.Instance, builder);
 
             builder.Append(" *");
 
@@ -99,14 +99,14 @@ namespace IKVM.Reflection
         /// <param name="builder"></param>
         /// <param name="signature"></param>
         /// <returns></returns>
-        static StringBuilder AppendMethodParameterTypes(StringBuilder builder, MethodSignatureBase? signature)
+        static StringBuilder AppendMethodParameterTypes(StringBuilder builder, MethodSigBase? signature)
         {
             if (signature is null)
                 return builder;
 
             for (int i = 0; i < signature.ParameterTypes.Count; i++)
             {
-                signature.ParameterTypes[i].AcceptVisitor(TypeSignatureNameVisitor.Instance, builder);
+                signature.ParameterTypes[i].AcceptVisitor(TypeSigNameVisitor.Instance, builder);
                 if (i < signature.ParameterTypes.Count - 1)
                     builder.Append(", ");
             }

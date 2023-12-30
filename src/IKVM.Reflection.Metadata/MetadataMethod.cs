@@ -13,7 +13,7 @@ namespace IKVM.Reflection.Metadata
     {
 
         readonly MetadataModule module;
-        readonly MetadataType? parentType;
+        readonly MetadataTypeDef? parentType;
         readonly MethodDefinitionHandle handle;
         readonly MethodDefinition def;
 
@@ -26,7 +26,7 @@ namespace IKVM.Reflection.Metadata
         /// <param name="module"></param>
         /// <param name="parentType"></param>
         /// <param name="handle"></param>
-        public MetadataMethod(MetadataModule module, MetadataType? parentType, MethodDefinitionHandle handle)
+        public MetadataMethod(MetadataModule module, MetadataTypeDef? parentType, MethodDefinitionHandle handle)
         {
             this.module = module ?? throw new ArgumentNullException(nameof(module));
             this.parentType = parentType;
@@ -42,17 +42,17 @@ namespace IKVM.Reflection.Metadata
         /// <summary>
         /// Gets the parent type of this method.
         /// </summary>
-        IModule IMethod.Module => Module;
+        ModuleDef IMethod.Module => Module;
 
         /// <summary>
         /// Gets the parent type of the method.
         /// </summary>
-        public MetadataType? ParentType => parentType;
+        public MetadataTypeDef? ParentType => parentType;
 
         /// <summary>
         /// Gets the parent type of this method.
         /// </summary>
-        IType? IMethod.ParentType => ParentType;
+        TypeDef? IMethod.ParentType => ParentType;
 
         /// <summary>
         /// Gets the name of the method.
@@ -82,7 +82,7 @@ namespace IKVM.Reflection.Metadata
         /// <summary>
         /// Gets the type signature of the method return.
         /// </summary>
-        public TypeSignature ReturnType => Signature.ReturnType;
+        public TypeSig ReturnType => Signature.ReturnType;
 
         /// <summary>
         /// Gets the generic parameters of the method.
@@ -92,7 +92,7 @@ namespace IKVM.Reflection.Metadata
         /// <summary>
         /// Gets the generic parameters of the method.
         /// </summary>
-        IReadOnlyList<IGenericParameter> IMethod.GenericParameters => GenericParameters;
+        IReadOnlyList<GenericParameter> IMethod.GenericParameters => GenericParameters;
 
         /// <summary>
         /// Loads the generic parameters of the method.

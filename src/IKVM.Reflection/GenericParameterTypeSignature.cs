@@ -6,7 +6,7 @@ namespace IKVM.Reflection
     /// <summary>
     /// Represents a type signature that references a type argument from a generic type or method.
     /// </summary>
-    public class GenericParameterTypeSignature : TypeSignature
+    public class GenericParameterTypeSignature : TypeSig
     {
 
         readonly GenericParameterScope scope;
@@ -35,10 +35,10 @@ namespace IKVM.Reflection
         public int Index => index;
 
         /// <inheritdoc />
-        public override TResult AcceptVisitor<TResult>(ITypeSignatureVisitor<TResult> visitor) => visitor.VisitGenericParameterType(this);
+        public override TResult AcceptVisitor<TResult>(ITypeDefVisitor<TResult> visitor) => visitor.VisitGenericParameterType(this);
 
         /// <inheritdoc />
-        public override TResult AcceptVisitor<TState, TResult>(ITypeSignatureVisitor<TState, TResult> visitor, TState state) => visitor.VisitGenericParameterType(this, state);
+        public override TResult AcceptVisitor<TState, TResult>(ITypeDefVisitor<TState, TResult> visitor, TState state) => visitor.VisitGenericParameterType(this, state);
 
     }
 

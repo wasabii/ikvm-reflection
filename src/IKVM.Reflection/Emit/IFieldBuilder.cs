@@ -10,7 +10,7 @@
         /// <summary>
         /// Gets a reference to the field being written to.
         /// </summary>
-        IField Field { get; }
+        FieldDef Field { get; }
 
     }
 

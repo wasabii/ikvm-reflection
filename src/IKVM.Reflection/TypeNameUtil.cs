@@ -17,7 +17,7 @@ namespace IKVM.Reflection
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static string GetTypeFullName(ITypeRef? type)
+        public static string GetTypeFullName(ITypeDefOrRef? type)
         {
             var builder = new StringBuilder();
             AppendTypeFullName(builder, type);
@@ -30,14 +30,14 @@ namespace IKVM.Reflection
         /// <param name="builder"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static StringBuilder AppendTypeFullName(StringBuilder builder, ITypeRef? type)
+        public static StringBuilder AppendTypeFullName(StringBuilder builder, ITypeDefOrRef? type)
         {
             if (type is null)
                 return builder.Append(NullTypeString);
 
-            if (type.ParentType is { } parentType)
+            if (type.DeclaringType is { } declaringType)
             {
-                AppendTypeFullName(builder, parentType);
+                AppendTypeFullName(builder, declaringType);
                 builder.Append('+');
             }
             else if (type.Namespace != null)
@@ -50,11 +50,11 @@ namespace IKVM.Reflection
         }
 
         /// <summary>
-        /// Computes the full name of the <see cref="IType"/>.
+        /// Computes the full name of the <see cref="TypeDef"/>.
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static string GetTypeFullName(IType? type)
+        public static string GetTypeFullName(TypeDef? type)
         {
             var builder = new StringBuilder();
             AppendTypeFullName(builder, type);
@@ -62,17 +62,17 @@ namespace IKVM.Reflection
         }
 
         /// <summary>
-        /// Appends the full name of a <see cref="IType"/> to the builder.
+        /// Appends the full name of a <see cref="TypeDef"/> to the builder.
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static StringBuilder AppendTypeFullName(StringBuilder builder, IType? type)
+        public static StringBuilder AppendTypeFullName(StringBuilder builder, TypeDef? type)
         {
             if (type is null)
                 return builder.Append(NullTypeString);
 
-            if (type.ParentType is { } parentType)
+            if (type.DeclaringType is { } parentType)
             {
                 AppendTypeFullName(builder, parentType);
                 builder.Append('+');

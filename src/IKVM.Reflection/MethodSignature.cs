@@ -1,29 +1,28 @@
-﻿namespace IKVM.Reflection
+﻿using System.Collections.Generic;
+
+namespace IKVM.Reflection
 {
+
     /// <summary>
-    /// Represents the signature of a method defined or referenced by a .NET executable file.
+    /// Represents the signature of a method.
     /// </summary>
-    public class MethodSignature : MethodSignatureBase
+    public abstract class MethodSignature
     {
 
-        readonly int genericParameterCount;
-
         /// <summary>
-        /// Creates a new method signature with the provided return and parameter types.
+        /// Gets the return type of the method descriptor.
         /// </summary>
-        /// <param name="attributes">The attributes.</param>
-        /// <param name="returnType">The return type of the method.</param>
-        /// <param name="parameterTypes">The types of the parameter the method defines.</param>
-        public MethodSignature(CallingConventionAttributes attributes, int genericParameterCount, TypeSignature returnType, params TypeSignature[] parameterTypes) :
-            base(attributes, returnType, parameterTypes)
-        {
-            this.genericParameterCount = genericParameterCount;
-        }
+        public abstract ITypeDefOrRef ReturnType { get; }
 
         /// <summary>
         /// Gets the number of generic parameters this method defines.
         /// </summary>
-        public int GenericParameterCount => genericParameterCount;
+        public abstract int GenericParameterCount { get; }
+
+        /// <summary>
+        /// Gets an ordered list of types indicating the types of the parameters that this member defines.
+        /// </summary>
+        public abstract IReadOnlyList<ITypeDefOrRef> ParameterTypes { get; }
 
     }
 

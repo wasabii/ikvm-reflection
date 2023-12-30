@@ -39,7 +39,7 @@ namespace IKVM.Reflection.Metadata
             /// </summary>
             /// <param name="assembly"></param>
             /// <returns></returns>
-            public bool TryResolve(out IAssembly? assembly)
+            public bool TryResolve(out AssemblyDef? assembly)
             {
                 return module.Assembly.Context.TryResolveAssembly(Name, module, out assembly);
             }
@@ -116,7 +116,7 @@ namespace IKVM.Reflection.Metadata
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public bool TryResolve(out IType? type)
+        public bool TryResolve(out TypeDef? type)
         {
             return module.Assembly.Context.TryResolveType(assembly.Name, Namespace ?? throw new InvalidOperationException(), Name, module, out type);
         }

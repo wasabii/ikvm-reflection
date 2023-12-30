@@ -18,7 +18,7 @@ namespace IKVM.Reflection.Metadata
 
         IAssemblyRef? assembly;
         Lazy<ITypeRef?>? parentType;
-        IType? resolved;
+        TypeDef? resolved;
 
         /// <summary>
         /// Initializes a new instance.
@@ -110,7 +110,7 @@ namespace IKVM.Reflection.Metadata
         /// </summary>
         /// <param name="def"></param>
         /// <returns></returns>
-        public bool TryResolve(out IType? def)
+        public bool TryResolve(out TypeDef? def)
         {
             def = this.resolved;
             if (def != null)
@@ -138,7 +138,7 @@ namespace IKVM.Reflection.Metadata
         /// Attempts to resolve this type by type scope.
         /// </summary>
         /// <returns></returns>
-        IType? ResolveByTypeScope()
+        TypeDef? ResolveByTypeScope()
         {
             // create and resolve a reference to the declaring type
             var h = (TypeReferenceHandle)reference.ResolutionScope;
@@ -156,7 +156,7 @@ namespace IKVM.Reflection.Metadata
         /// Attempts to resolve this type by module scope.
         /// </summary>
         /// <returns></returns>
-        MetadataType? ResolveByModuleScope()
+        MetadataTypeDef? ResolveByModuleScope()
         {
             // find module that should contain type
             var h = (ModuleReferenceHandle)reference.ResolutionScope;
@@ -175,7 +175,7 @@ namespace IKVM.Reflection.Metadata
         /// Attempts to resolve this type by assembly scope.
         /// </summary>
         /// <returns></returns>
-        IType? ResolveByAssemblyScope()
+        TypeDef? ResolveByAssemblyScope()
         {
             // find assembly that should contain type
             var h = (AssemblyReferenceHandle)reference.ResolutionScope;

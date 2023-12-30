@@ -12,7 +12,7 @@ namespace IKVM.Reflection
         /// <summary>
         /// Gets a collection of type arguments used to instantiate the generic member.
         /// </summary>
-        IReadOnlyList<TypeSignature> TypeArguments { get; }
+        IReadOnlyList<ITypeDefOrRef> TypeArguments { get; }
 
     }
 

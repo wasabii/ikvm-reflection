@@ -12,7 +12,7 @@ namespace IKVM.Reflection.Emit
         /// <summary>
         /// Gets a reference to the module being written to.
         /// </summary>
-        IModule Module { get; }
+        ModuleDef Module { get; }
 
         /// <summary>
         /// Creates a new type and returns the writer.
@@ -22,7 +22,7 @@ namespace IKVM.Reflection.Emit
         /// <param name="attributes"></param>
         /// <param name="baseType"></param>
         /// <returns></returns>
-        ITypeBuilder CreateType(string namespaceName, string name, TypeAttributes attributes, TypeSignature baseType);
+        ITypeBuilder CreateType(string namespaceName, string name, TypeAttributes attributes, TypeSig baseType);
 
     }
 

@@ -13,7 +13,7 @@ namespace IKVM.Reflection
         /// <param name="name"></param>
         /// <param name="assembly"></param>
         /// <returns></returns>
-        public static bool TryResolveAssembly(this IAssemblyContext self, string name, out IAssembly? assembly)
+        public static bool TryResolveAssembly(this IAssemblyContext self, string name, out AssemblyDef? assembly)
         {
             return self.TryResolveAssembly(new AssemblyName(name), null, out assembly);
         }
@@ -27,7 +27,7 @@ namespace IKVM.Reflection
         /// <param name="name"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static bool TryResolveType(this IAssemblyContext self, string assemblyName, string namespaceName, string name, out IType? type)
+        public static bool TryResolveType(this IAssemblyContext self, string assemblyName, string namespaceName, string name, out TypeDef? type)
         {
             return self.TryResolveType(new AssemblyName(assemblyName), namespaceName, name, null, out type);
         }

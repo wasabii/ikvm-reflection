@@ -13,7 +13,7 @@ namespace IKVM.Reflection.Metadata
     {
 
         readonly MetadataModule module;
-        readonly MetadataType parentType;
+        readonly MetadataTypeDef parentType;
         readonly EventDefinitionHandle handle;
         readonly EventDefinition def;
 
@@ -28,7 +28,7 @@ namespace IKVM.Reflection.Metadata
         /// <param name="module"></param>
         /// <param name="declaringType"></param>
         /// <param name="handle"></param>
-        public MetadataEvent(MetadataModule module, MetadataType declaringType, EventDefinitionHandle handle)
+        public MetadataEvent(MetadataModule module, MetadataTypeDef declaringType, EventDefinitionHandle handle)
         {
             Debug.Assert(handle.IsNil == false);
             this.module = module ?? throw new ArgumentNullException(nameof(module));
@@ -45,17 +45,17 @@ namespace IKVM.Reflection.Metadata
         /// <summary>
         /// Gets the parent module of this event.
         /// </summary>
-        IModule IEvent.Module => Module;
+        ModuleDef IEvent.Module => Module;
 
         /// <summary>
         /// Gets the parent type of this event.
         /// </summary>
-        public MetadataType ParentType => parentType;
+        public MetadataTypeDef ParentType => parentType;
 
         /// <summary>
         /// Gets the parent type of this event.
         /// </summary>
-        IType IEvent.ParentType => ParentType;
+        TypeDef IEvent.ParentType => ParentType;
 
         /// <summary>
         /// Gets the name of this event.
@@ -75,7 +75,7 @@ namespace IKVM.Reflection.Metadata
         /// <summary>
         /// Gets the type signature of this event.
         /// </summary>
-        public TypeSignature EventType => module.DecodeTypeSignature(def.Type, new MetadataGenericContext(ParentType, null));
+        public TypeSig EventType => module.DecodeTypeSignature(def.Type, new MetadataGenericContext(ParentType, null));
 
         /// <summary>
         /// Gets the add method.

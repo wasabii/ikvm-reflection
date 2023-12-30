@@ -37,7 +37,7 @@ namespace IKVM.Reflection.Metadata
         /// <param name="requestingModule"></param>
         /// <param name="assembly"></param>
         /// <returns></returns>
-        public bool TryResolveAssembly(IAssemblyContext context, AssemblyName name, IModule? requestingModule, out IAssembly? assembly)
+        public bool TryResolveAssembly(IAssemblyContext context, AssemblyName name, ModuleDef? requestingModule, out AssemblyDef? assembly)
         {
             // check direct file references
             foreach (var path in assemblyPaths)
@@ -60,7 +60,7 @@ namespace IKVM.Reflection.Metadata
         /// <param name="path"></param>
         /// <param name="asm"></param>
         /// <returns></returns>
-        bool TryLoad(IAssemblyContext context, AssemblyName name, string path, out IAssembly? asm)
+        bool TryLoad(IAssemblyContext context, AssemblyName name, string path, out AssemblyDef? asm)
         {
             asm = null;
 

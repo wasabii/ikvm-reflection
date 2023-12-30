@@ -52,7 +52,7 @@ namespace IKVM.Reflection
         /// <param name="builder"></param>
         /// <param name="declaringType"></param>
         /// <returns></returns>
-        static StringBuilder AppendMemberParentType(StringBuilder builder, IType? declaringType)
+        static StringBuilder AppendMemberParentType(StringBuilder builder, TypeDef? declaringType)
         {
             if (declaringType is not null)
             {
@@ -86,14 +86,14 @@ namespace IKVM.Reflection
         /// <param name="state"></param>
         /// <param name="signature"></param>
         /// <returns></returns>
-        static StringBuilder AppendSignatureParameterTypes(StringBuilder state, MethodSignatureBase? signature)
+        static StringBuilder AppendSignatureParameterTypes(StringBuilder state, MethodSigBase? signature)
         {
             if (signature is null)
                 return state;
 
             for (int i = 0; i < signature.ParameterTypes.Count; i++)
             {
-                signature.ParameterTypes[i].AcceptVisitor(TypeSignatureNameVisitor.Instance, state);
+                signature.ParameterTypes[i].AcceptVisitor(TypeSigNameVisitor.Instance, state);
                 if (i < signature.ParameterTypes.Count - 1)
                     state.Append(", ");
             }
@@ -110,7 +110,7 @@ namespace IKVM.Reflection
         /// <param name="builder"></param>
         /// <param name="genericParameters"></param>
         /// <returns></returns>
-        static StringBuilder AppendTypeParameters(StringBuilder builder, IReadOnlyList<IGenericParameter> genericParameters)
+        static StringBuilder AppendTypeParameters(StringBuilder builder, IReadOnlyList<GenericParameter> genericParameters)
         {
             if (genericParameters.Count > 0)
             {
@@ -122,12 +122,12 @@ namespace IKVM.Reflection
             return builder;
         }
 
-        static StringBuilder AppendTypeParameters(StringBuilder builder, IReadOnlyList<TypeSignature> typeArguments)
+        static StringBuilder AppendTypeParameters(StringBuilder builder, IReadOnlyList<TypeSig> typeArguments)
         {
             if (typeArguments.Count > 0)
             {
                 builder.Append('<');
-                builder.AppendJoin(typeArguments, ", ", static (s, t) => t.AcceptVisitor(TypeSignatureNameVisitor.Instance, s));
+                builder.AppendJoin(typeArguments, ", ", static (s, t) => t.AcceptVisitor(TypeSigNameVisitor.Instance, s));
                 builder.Append('>');
             }
 
@@ -135,11 +135,37 @@ namespace IKVM.Reflection
         }
 
         /// <summary>
-        /// Computes the full name of a property definition, including its declaring type's full name, as well as its
-        /// return type and parameters.
+        /// Gets display name for <paramref name="field"/>.
         /// </summary>
-        /// <param name="property">The property</param>
-        /// <returns>The full name</returns>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public static string GetFieldDisplayName(FieldDef field)
+        {
+            var builder = new StringBuilder();
+            AppendFieldDisplayName(builder, field);
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Appends the display name for <paramref name="field"/> to <paramref name="builder"/>.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        static StringBuilder AppendFieldDisplayName(StringBuilder builder, FieldDef field)
+        {
+            SignatureNameUtil.AppendTypeDisplayName(builder, field.FieldType);
+            builder.Append(' ');
+            AppendMemberParentType(builder, field.DeclaringType);
+            builder.Append(field.Name ?? NullMemberNameString);
+            return builder;
+        }
+
+        /// <summary>
+        /// Gets the display name for <paramref name="property"/>.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
         public static string GetPropertyDisplayName(IProperty property)
         {
             var builder = new StringBuilder();
@@ -148,9 +174,11 @@ namespace IKVM.Reflection
         }
 
         /// <summary>
-        /// Computes the full name of a property definition, including its declaring type's full name, as well as its
-        /// return type and parameters.
+        /// Appends the display name for <paramref name="property"/> to <paramref name="builder"/>.
         /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
         static StringBuilder AppendPropertyDisplayName(StringBuilder builder, IProperty property)
         {
             SignatureNameUtil.AppendTypeDisplayName(builder, property.PropertyType);
@@ -169,35 +197,10 @@ namespace IKVM.Reflection
         }
 
         /// <summary>
-        /// Computes the full name of a property definition, including its declaring type's full name, as well as its
-        /// return type and parameters.
+        /// Gets the display name for <paramref name="evt"/>.
         /// </summary>
-        /// <param name="property">The property</param>
-        /// <returns>The full name</returns>
-        public static string GetPropertyRefDisplayName(IPropertyRef property)
-        {
-            var builder = new StringBuilder();
-            AppendPropertyRefDisplayName(builder, property);
-            return builder.ToString();
-        }
-
-        /// <summary>
-        /// Computes the full name of a property definition, including its declaring type's full name, as well as its
-        /// return type and parameters.
-        /// </summary>
-        static StringBuilder AppendPropertyRefDisplayName(StringBuilder builder, IPropertyRef property)
-        {
-            AppendMemberParentType(builder, property.ParentType);
-            builder.Append(property.Name ?? NullMemberNameString);
-            return builder;
-        }
-
-        /// <summary>
-        /// Computes the full name of a event definition, including its declaring type's full name, as well as its
-        /// return type and parameters.
-        /// </summary>
-        /// <param name="evt">The property</param>
-        /// <returns>The full name</returns>
+        /// <param name="evt"></param>
+        /// <returns></returns>
         public static string GetEventDisplayName(IEvent evt)
         {
             var builder = new StringBuilder();
@@ -206,37 +209,15 @@ namespace IKVM.Reflection
         }
 
         /// <summary>
-        /// Computes the full name of a event definition, including its declaring type's full name, as well as its
-        /// return type and parameters.
+        /// Appends the display name for <paramref name="evt"/> to <paramref name="builder"/>.
         /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="evt"></param>
+        /// <returns></returns>
         static StringBuilder AppendEventDisplayName(StringBuilder builder, IEvent evt)
         {
             SignatureNameUtil.AppendTypeDisplayName(builder, evt.EventType);
             builder.Append(' ');
-            AppendMemberParentType(builder, evt.ParentType);
-            builder.Append(evt.Name);
-            return builder;
-        }
-
-        /// <summary>
-        /// Computes the full name of a event definition, including its declaring type's full name, as well as its
-        /// return type and parameters.
-        /// </summary>
-        /// <param name="evt">The property</param>
-        /// <returns>The full name</returns>
-        public static string GetEventRefDisplayName(IEventRef evt)
-        {
-            var builder = new StringBuilder();
-            AppendEventRefDisplayName(builder, evt);
-            return builder.ToString();
-        }
-
-        /// <summary>
-        /// Computes the full name of a event definition, including its declaring type's full name, as well as its
-        /// return type and parameters.
-        /// </summary>
-        static StringBuilder AppendEventRefDisplayName(StringBuilder builder, IEventRef evt)
-        {
             AppendMemberParentType(builder, evt.ParentType);
             builder.Append(evt.Name);
             return builder;

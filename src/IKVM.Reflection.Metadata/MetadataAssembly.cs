@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
+
 using IKVM.Reflection.Util;
 
 namespace IKVM.Reflection.Metadata
@@ -14,7 +14,7 @@ namespace IKVM.Reflection.Metadata
     /// <summary>
     /// Represents an assembly definition loaded from metadata.
     /// </summary>
-    internal class MetadataAssembly : IAssembly, IDisposable
+    internal class MetadataAssembly : MetadataAssemblyDefBase, IDisposable
     {
 
         /// <summary>
@@ -59,27 +59,29 @@ namespace IKVM.Reflection.Metadata
             return new MetadataAssembly(context, pe, pe.GetMetadataReader(), location, resolver);
         }
 
-        readonly IAssemblyContext context;
         readonly IMetadataFileResolver resolver;
 
         AssemblyName? name;
         MetadataModule manifestModule;
         MetadataModule[] modules;
-        MetadataType[]? types;
-
-        readonly ConcurrentDictionary<(string, string), MetadataType?> typesByName = new();
+        MetadataTypeDefBase[]? types;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        /// <exception cref="ArgumentNullException"></exception>
-        internal MetadataAssembly(IAssemblyContext context, PEReader pe, MetadataReader reader, string location, IMetadataFileResolver resolver)
+        /// <param name="pe"></param>
+        /// <param name="reader"></param>
+        /// <param name="location"></param>
+        /// <param name="resolver"></param>
+        public MetadataAssembly(IAssemblyContext context, PEReader pe, MetadataReader reader, string location, IMetadataFileResolver resolver) :
+            base(context)
         {
-            this.context = context ?? throw new ArgumentNullException(nameof(context));
-            this.resolver = resolver;
-            this.modules = new MetadataModule[reader.AssemblyFiles.Count + 1];
-            this.modules[0] = manifestModule = new MetadataModule(this, pe, reader, location);
+            this.resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+
+            // initial module is the current reader
+            modules = new MetadataModule[reader.AssemblyFiles.Count + 1];
+            modules[0] = manifestModule = new MetadataModule(this, pe, reader, location);
 
             int i = 1;
             foreach (var h in manifestModule.Reader.AssemblyFiles)
@@ -98,109 +100,22 @@ namespace IKVM.Reflection.Metadata
             }
         }
 
-        /// <summary>
-        /// Reference to the hosting assembly context.
-        /// </summary>
-        internal IAssemblyContext Context => context;
+        /// <inheritdoc />
+        public override AssemblyName Name => LazyUtil.Get(ref name, () => manifestModule.Reader.GetAssemblyDefinition().GetAssemblyName());
 
-        /// <summary>
-        /// Gets the name of the assembly.
-        /// </summary>
-        public AssemblyName Name => LazyUtil.Get(ref name, () => manifestModule.Reader.GetAssemblyDefinition().GetAssemblyName());
+        /// <inheritdoc />
+        public override IReadOnlyList<MetadataModule> Modules => modules;
 
-        /// <summary>
-        /// Gets the modules of the assembly.
-        /// </summary>
-        internal IReadOnlyList<MetadataModule> Modules => modules;
-
-        /// <summary>
-        /// Gets the modules of the assembly.
-        /// </summary>
-        IReadOnlyList<IModule> IAssembly.Modules => Modules;
-
-        /// <summary>
-        /// Attempts to resolve the specified module by name.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="module"></param>
-        /// <returns></returns>
-        internal bool TryFindModule(string name, out MetadataModule? module)
-        {
-            module = Modules.FirstOrDefault(i => i.Name == name);
-            return module != null;
-        }
-
-        /// <summary>
-        /// Attempts to resolve the specified module by name.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="module"></param>
-        /// <returns></returns>
-        bool IAssembly.TryFindModule(string name, out IModule? module)
-        {
-            var r = TryFindModule(name, out var m);
-            module = m;
-            return r;
-        }
-
-        /// <summary>
-        /// Gets the types of the assembly.
-        /// </summary>
-        internal IReadOnlyList<MetadataType> Types => LazyUtil.Get(ref types, LoadTypes);
-
-        /// <summary>
-        /// Gets the types of the assembly.
-        /// </summary>
-        IReadOnlyList<IType> IAssembly.Types => Types;
-
-        /// <summary>
-        /// Attempts to find the specified type by name.
-        /// </summary>
-        /// <param name="namespaceName"></param>
-        /// <param name="name"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        internal bool TryFindType(string namespaceName, string name, out MetadataType? type)
-        {
-            return (type = typesByName.GetOrAdd((namespaceName, name), _ => FindTypeImpl(_.Item1, _.Item2))) != null;
-        }
-
-        /// <summary>
-        /// Attempts to find the specified type by name.
-        /// </summary>
-        /// <param name="namespaceName"></param>
-        /// <param name="name"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        bool IAssembly.TryFindType(string namespaceName, string name, out IType? type)
-        {
-            var r = TryFindType(namespaceName, name, out var t);
-            type = t;
-            return r;
-        }
-
-        /// <summary>
-        /// Attempts to resolve the specified type by name.
-        /// </summary>
-        /// <param name="namespaceName"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        MetadataType? FindTypeImpl(string namespaceName, string name)
-        {
-            foreach (var module in modules)
-                if (module.TryFindType(namespaceName, name, out var t))
-                    return t;
-
-            return null;
-        }
+        /// <inheritdoc />
+        public override IReadOnlyList<MetadataTypeDefBase> Types => LazyUtil.Get(ref types, LoadTypes);
 
         /// <summary>
         /// Loads the types of the assembly.
         /// </summary>
         /// <returns></returns>
-        MetadataType[] LoadTypes()
+        MetadataTypeDefBase[] LoadTypes()
         {
-            var l = new MetadataType[modules.Sum(i => i.Types.Length)];
+            var l = new MetadataTypeDef[modules.Sum(i => i.Types.Length)];
 
             int i = 0;
             foreach (var module in modules)
@@ -210,6 +125,18 @@ namespace IKVM.Reflection.Metadata
             }
 
             return l;
+        }
+
+        /// <inheritdoc />
+        public override bool TryFindType(string namespaceName, string name, out TypeDef? type)
+        {
+            // scan modules instead of forcing load of all types
+
+            foreach (var module in modules)
+                if (module.TryFindType(namespaceName, name, out type))
+                    return true;
+
+            return false;
         }
 
         /// <summary>
