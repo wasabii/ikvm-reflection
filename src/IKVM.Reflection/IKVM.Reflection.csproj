@@ -1,9 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net472</TargetFrameworks>
+        <TargetFrameworks>net6.0;net7.0;net8.0;netstandard2.0;net462</TargetFrameworks>
         <LangVersion>11</LangVersion>
         <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <PackageDescription>Provides read-only reflection on assemblies in an isolated context with support for assemblies that target different processor architectures and runtimes. Using MetadataLoadContext enables you to inspect assemblies without loading them into the main execution context. Assemblies in MetadataLoadContext are treated only as metadata, that is, you can read information about their members, but cannot execute any code contained in them.</PackageDescription>
+        <CoreCompileDependsOn>PrepareResources;$(CompileDependsOn)</CoreCompileDependsOn>
     </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="System" />
+        <Using Include="System.Collections.Generic" />
+        <Using Include="System.Reflection" />
+        <Using Include="System.Reflection.TypeLoading" />
+        <Using Include="IKVM.Reflection.Resources" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+        <PackageReference Include="System.Reflection.Metadata" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="Resources\SR.resx">
+            <Generator>MSBuild:Compile</Generator>
+            <StronglyTypedFileName>$(IntermediateOutputPath)\SR.Designer.cs</StronglyTypedFileName>
+            <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+            <StronglyTypedNamespace>IKVM.Reflection.Resources</StronglyTypedNamespace>
+            <StronglyTypedClassName>SR</StronglyTypedClassName>
+        </EmbeddedResource>
+    </ItemGroup>
 
 </Project>
