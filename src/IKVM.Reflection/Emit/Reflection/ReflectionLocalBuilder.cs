@@ -1,4 +1,5 @@
-﻿namespace IKVM.Reflection.Emit.Reflection
+﻿
+namespace IKVM.Reflection.Emit.Reflection
 {
 
     internal class ReflectionLocalBuilder : LocalBuilder
@@ -21,6 +22,19 @@
 
         public System.Reflection.Emit.LocalBuilder Wrapped => wrapped;
 
+        /// <inheritdoc />
+        public override bool IsPinned => wrapped.IsPinned;
+
+        /// <inheritdoc />
+        public override int LocalIndex => wrapped.LocalIndex;
+
+        /// <inheritdoc />
+        public override Type LocalType => wrapped.LocalType;
+
+        /// <inheritdoc />
+        protected override LocalVariableInfo AsLocalVariableInfo() => throw new NotImplementedException();
+
+        /// <inheritdoc />
         public override string ToString() => Wrapped.ToString();
 
     }

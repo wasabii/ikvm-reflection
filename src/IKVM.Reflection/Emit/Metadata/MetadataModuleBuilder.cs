@@ -19,6 +19,11 @@ namespace IKVM.Reflection.Emit.Metadata
             this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        public override FieldBuilder DefineInitializedData(string name, byte[] data, FieldAttributes attributes)
+        {
+            throw new NotImplementedException();
+        }
+
         public override EnumBuilder DefineEnum(string name, TypeAttributes visibility, Type underlyingType)
         {
             throw new NotImplementedException();
@@ -39,8 +44,6 @@ namespace IKVM.Reflection.Emit.Metadata
             throw new NotImplementedException();
         }
 
-#if NET6_0_OR_GREATER
-
         public override MethodBuilder DefinePInvokeMethod(string name, string dllName, MethodAttributes attributes, CallingConventions callingConvention, Type? returnType, Type[]? parameterTypes, CallingConvention nativeCallConv, CharSet nativeCharSet)
         {
             throw new NotImplementedException();
@@ -50,8 +53,6 @@ namespace IKVM.Reflection.Emit.Metadata
         {
             throw new NotImplementedException();
         }
-
-#endif
 
         public override TypeBuilder DefineType(string name, TypeAttributes attr, Type? parent, PackingSize packingSize, int typesize)
         {
@@ -84,6 +85,11 @@ namespace IKVM.Reflection.Emit.Metadata
         }
 
         public override TypeBuilder DefineType(string name, TypeAttributes attr, Type? parent, int typesize)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Module AsModule()
         {
             throw new NotImplementedException();
         }

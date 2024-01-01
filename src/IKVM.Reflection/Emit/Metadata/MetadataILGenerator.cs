@@ -154,8 +154,6 @@ namespace IKVM.Reflection.Emit.Metadata
             throw new NotImplementedException();
         }
 
-#if NETFRAMEWORK || NET
-
         public override void EmitCalli(OpCode opcode, CallingConvention unmanagedCallConv, Type? returnType, Type[]? parameterTypes)
         {
             throw new NotImplementedException();
@@ -165,8 +163,6 @@ namespace IKVM.Reflection.Emit.Metadata
         {
             throw new NotImplementedException();
         }
-
-#endif
 
         public override void EmitWriteLine(string value)
         {

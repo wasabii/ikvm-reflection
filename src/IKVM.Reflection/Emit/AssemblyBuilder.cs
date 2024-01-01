@@ -1,5 +1,4 @@
-﻿
-using System.Resources;
+﻿using System.Resources;
 
 namespace IKVM.Reflection.Emit
 {
@@ -7,6 +6,14 @@ namespace IKVM.Reflection.Emit
     public abstract class AssemblyBuilder
     {
 
+        public static bool operator ==(AssemblyBuilder? left, Assembly? right) => Equals(left?.AsAssembly(), right);
+
+        public static bool operator !=(AssemblyBuilder? left, Assembly? right) => Equals(left?.AsAssembly(), right) == false;
+
+        /// <summary>
+        /// Returns a <see cref="Assembly"/> instance that represents the assembly being generated.
+        /// </summary>
+        /// <param name="builder"></param>
         public static implicit operator Assembly(AssemblyBuilder builder) => builder.AsAssembly();
 
         /// <summary>
@@ -16,32 +23,20 @@ namespace IKVM.Reflection.Emit
         public abstract AssemblyName GetName();
 
         /// <summary>
-        /// Gets an <see cref="AssemblyName"/> for this assembly, setting the codebase as specified by copiedName.
-        /// </summary>
-        /// <param name="copiedName"></param>
-        /// <returns></returns>
-        public abstract AssemblyName GetName(bool copiedName);
-
-        /// <summary>
-        /// Gets the full path or UNC location of the loaded file that contains the manifest.
-        /// </summary>
-        public abstract string Location { get; }
-
-        /// <summary>
         /// Gets a collection of the types defined in this assembly.
         /// </summary>
-        public abstract IEnumerable<TypeInfo> DefinedTypes { get; }
+        public abstract IEnumerable<TypeBuilder> DefinedTypes { get; }
 
         /// <summary>
         /// Gets a collection of the public types defined in this assembly that are visible outside the assembly.
         /// </summary>
-        public abstract IEnumerable<Type> ExportedTypes { get; }
+        public abstract IEnumerable<TypeBuilder> ExportedTypes { get; }
 
         /// <summary>
         /// Gets all types defined in this assembly.
         /// </summary>
         /// <returns></returns>
-        public abstract Type[] GetTypes();
+        public abstract TypeBuilder[] GetTypes();
 
         /// <summary>
         /// Gets the <see cref="Type"/> object with the specified name in the assembly instance, with the options of ignoring the case, and of throwing an exception if the type is not found.
@@ -50,7 +45,7 @@ namespace IKVM.Reflection.Emit
         /// <param name="throwOnError"></param>
         /// <param name="ignoreCase"></param>
         /// <returns></returns>
-        public abstract Type? GetType(string name, bool throwOnError, bool ignoreCase);
+        public abstract TypeBuilder? GetType(string name, bool throwOnError, bool ignoreCase);
 
         /// <summary>
         /// Gets the <see cref="Type"/> object with the specified name in the assembly instance and optionally throws an exception if the type is not found.
@@ -58,20 +53,20 @@ namespace IKVM.Reflection.Emit
         /// <param name="name"></param>
         /// <param name="throwOnError"></param>
         /// <returns></returns>
-        public abstract Type? GetType(string name, bool throwOnError);
+        public abstract TypeBuilder? GetType(string name, bool throwOnError);
 
         /// <summary>
         /// Gets the <see cref="Type"/> object with the specified name in the assembly instance.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public abstract Type? GetType(string name);
+        public abstract TypeBuilder? GetType(string name);
 
         /// <summary>
         /// Gets the forwarded types within the assembly.
         /// </summary>
         /// <returns></returns>
-        public abstract Type[] GetForwardedTypes();
+        public abstract TypeBuilder[] GetForwardedTypes();
 
         /// <summary>
         /// Gets a string representing the version of the common language runtime (CLR) saved in the file containing the manifest.
@@ -86,27 +81,27 @@ namespace IKVM.Reflection.Emit
         /// <summary>
         /// Gets the entry point of this assembly.
         /// </summary>
-        public abstract MethodInfo? EntryPoint { get; }
+        public abstract MethodBuilder? EntryPoint { get; }
 
         /// <summary>
         /// Gets all the modules that are part of this assembly.
         /// </summary>
         /// <returns></returns>
-        public abstract Module[] GetModules();
+        public abstract ModuleBuilder[] GetModules();
 
         /// <summary>
         /// Gets all the modules that are part of this assembly, specifying whether to include resource modules.
         /// </summary>
         /// <param name="getResourceModules"></param>
         /// <returns></returns>
-        public abstract Module[] GetModules(bool getResourceModules);
+        public abstract ModuleBuilder[] GetModules(bool getResourceModules);
 
         /// <summary>
         /// Gets the specified module in this assembly.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public abstract Module? GetModule(string name);
+        public abstract ModuleBuilder? GetModule(string name);
 
         /// <summary>
         /// Defines a named module in this assembly.
@@ -138,14 +133,14 @@ namespace IKVM.Reflection.Emit
         /// Sets the entry point for this dynamic assembly, assuming that a console application is being built.
         /// </summary>
         /// <param name="entryMethod"></param>
-        public abstract void SetEntryPoint(MethodInfo entryMethod);
+        public abstract void SetEntryPoint(MethodBuilder entryMethod);
 
         /// <summary>
         /// Sets the entry point for this assembly and defines the type of the portable executable (PE file) being built.
         /// </summary>
         /// <param name="entryMethod"></param>
         /// <param name="fileKind"></param>
-        public abstract void SetEntryPoint(MethodInfo entryMethod, PEFileKinds fileKind);
+        public abstract void SetEntryPoint(MethodBuilder entryMethod, PEFileKinds fileKind);
 
         /// <summary>
         /// Adds an existing resource file to this assembly.
@@ -227,6 +222,12 @@ namespace IKVM.Reflection.Emit
         /// </summary>
         /// <returns></returns>
         protected abstract Assembly AsAssembly();
+
+        /// <inheritdoc />
+        public override bool Equals(object? obj) => object.ReferenceEquals(this, obj);
+
+        /// <inheritdoc />
+        public override int GetHashCode() => base.GetHashCode();
 
     }
 

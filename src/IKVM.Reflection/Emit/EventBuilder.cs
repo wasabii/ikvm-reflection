@@ -1,6 +1,4 @@
-﻿using System.Reflection.Emit;
-
-namespace IKVM.Reflection.Emit
+﻿namespace IKVM.Reflection.Emit
 {
 
     public abstract class EventBuilder
@@ -17,6 +15,12 @@ namespace IKVM.Reflection.Emit
         public abstract void SetRaiseMethod(MethodBuilder mdBuilder);
 
         public abstract void SetRemoveOnMethod(MethodBuilder mdBuilder);
+
+        /// <inheritdoc />
+        public override bool Equals(object? obj) => object.ReferenceEquals(this, obj);
+
+        /// <inheritdoc />
+        public override int GetHashCode() => base.GetHashCode();
 
     }
 

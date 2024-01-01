@@ -1,4 +1,5 @@
-﻿using System.Resources;
+﻿using System.Linq;
+using System.Resources;
 
 namespace IKVM.Reflection.Emit.Reflection
 {
@@ -24,22 +25,19 @@ namespace IKVM.Reflection.Emit.Reflection
         public System.Reflection.Emit.AssemblyBuilder Wrapped => wrapped;
 
         /// <inheritdoc />
-        public override string Location => wrapped.Location;
-
-        /// <inheritdoc />
         public override string ImageRuntimeVersion => wrapped.ImageRuntimeVersion;
 
         /// <inheritdoc />
         public override Module ManifestModule => wrapped.ManifestModule;
 
         /// <inheritdoc />
-        public override MethodInfo? EntryPoint => wrapped.EntryPoint;
+        public override MethodBuilder? EntryPoint => wrapped.EntryPoint is System.Reflection.Emit.MethodBuilder b ? context.Adopt(b) : null;
 
         /// <inheritdoc />
-        public override IEnumerable<TypeInfo> DefinedTypes => wrapped.DefinedTypes;
+        public override IEnumerable<TypeBuilder> DefinedTypes => wrapped.DefinedTypes.Cast<System.Reflection.Emit.TypeBuilder>().Select(context.Adopt);
 
         /// <inheritdoc />
-        public override IEnumerable<Type> ExportedTypes => wrapped.ExportedTypes;
+        public override IEnumerable<TypeBuilder> ExportedTypes => wrapped.ExportedTypes.Cast<System.Reflection.Emit.TypeBuilder>().Select(context.Adopt);
 
         /// <inheritdoc />
         public override ModuleBuilder DefineModule(string name) => context.Adopt(wrapped.DefineDynamicModule(name));
@@ -48,38 +46,35 @@ namespace IKVM.Reflection.Emit.Reflection
         public override AssemblyName GetName() => wrapped.GetName();
 
         /// <inheritdoc />
-        public override AssemblyName GetName(bool copiedName) => wrapped.GetName(copiedName);
+        public override TypeBuilder[] GetTypes() => wrapped.GetTypes().Cast<System.Reflection.Emit.TypeBuilder>().Select(context.Adopt).ToArray();
 
         /// <inheritdoc />
-        public override Type[] GetTypes() => wrapped.GetTypes();
+        public override TypeBuilder? GetType(string name) => wrapped.GetType(name) is System.Reflection.Emit.TypeBuilder b ? context.Adopt(b) : null;
 
         /// <inheritdoc />
-        public override Type? GetType(string name) => wrapped.GetType(name);
+        public override TypeBuilder? GetType(string name, bool throwOnError) => wrapped.GetType(name, throwOnError) is System.Reflection.Emit.TypeBuilder b ? context.Adopt(b) : null;
 
         /// <inheritdoc />
-        public override Type? GetType(string name, bool throwOnError) => wrapped.GetType(name, throwOnError);
+        public override TypeBuilder? GetType(string name, bool throwOnError, bool ignoreCase) => wrapped.GetType(name, throwOnError, ignoreCase) is System.Reflection.Emit.TypeBuilder b ? context.Adopt(b) : null;
 
         /// <inheritdoc />
-        public override Type? GetType(string name, bool throwOnError, bool ignoreCase) => wrapped.GetType(name, throwOnError, ignoreCase);
-
-        /// <inheritdoc />
-        public override Type[] GetForwardedTypes()
+        public override TypeBuilder[] GetForwardedTypes()
         {
 #if NET6_0_OR_GREATER
-            return wrapped.GetForwardedTypes();
+            return wrapped.GetForwardedTypes().Cast<System.Reflection.Emit.TypeBuilder>().Select(context.Adopt).ToArray();
 #else
             throw new PlatformNotSupportedException();
 #endif
         }
 
         /// <inheritdoc />
-        public override Module[] GetModules() => wrapped.GetModules();
+        public override ModuleBuilder[] GetModules() => wrapped.GetModules().Cast<System.Reflection.Emit.ModuleBuilder>().Select(context.Adopt).ToArray();
 
         /// <inheritdoc />
-        public override Module[] GetModules(bool getResourceModules) => wrapped.GetModules(getResourceModules);
+        public override ModuleBuilder[] GetModules(bool getResourceModules) => wrapped.GetModules(getResourceModules).Cast<System.Reflection.Emit.ModuleBuilder>().Select(context.Adopt).ToArray();
 
         /// <inheritdoc />
-        public override Module? GetModule(string name) => wrapped.GetModule(name);
+        public override ModuleBuilder? GetModule(string name) => wrapped.GetModule(name) is System.Reflection.Emit.ModuleBuilder b ? context.Adopt(b) : null;
 
         /// <inheritdoc />
         public override IList<CustomAttributeData> GetCustomAttributesData() => wrapped.GetCustomAttributesData();
@@ -97,7 +92,7 @@ namespace IKVM.Reflection.Emit.Reflection
         public override void SetCustomAttribute(ConstructorInfo con, byte[] binaryAttribute) => wrapped.SetCustomAttribute(con, binaryAttribute);
 
         /// <inheritdoc />
-        public override void SetEntryPoint(MethodInfo entryMethod)
+        public override void SetEntryPoint(MethodBuilder entryMethod)
         {
 #if NETFRAMEWORK
             wrapped.SetEntryPoint(entryMethod);
@@ -107,7 +102,7 @@ namespace IKVM.Reflection.Emit.Reflection
         }
 
         /// <inheritdoc />
-        public override void SetEntryPoint(MethodInfo entryMethod, PEFileKinds fileKind)
+        public override void SetEntryPoint(MethodBuilder entryMethod, PEFileKinds fileKind)
         {
 #if NETFRAMEWORK
             wrapped.SetEntryPoint(entryMethod, (System.Reflection.Emit.PEFileKinds)(int)fileKind);

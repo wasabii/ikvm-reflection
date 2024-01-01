@@ -19,6 +19,28 @@ namespace IKVM.Reflection.Emit.Metadata
             this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        public override Assembly Assembly => throw new NotImplementedException();
+
+        public override string? AssemblyQualifiedName => throw new NotImplementedException();
+
+        public override Type? BaseType => throw new NotImplementedException();
+
+        public override MethodBuilder? DeclaringMethod => throw new NotImplementedException();
+
+        public override string? FullName => throw new NotImplementedException();
+
+        public override IEnumerable<CustomAttributeData> CustomAttributes => throw new NotImplementedException();
+
+        public override Type? DeclaringType => throw new NotImplementedException();
+
+        public override MemberTypes MemberType => throw new NotImplementedException();
+
+        public override int MetadataToken => throw new NotImplementedException();
+
+        public override Module? Module => throw new NotImplementedException();
+
+        public override string Name => throw new NotImplementedException();
+
         public override void AddInterfaceImplementation(Type interfaceType)
         {
             throw new NotImplementedException();
@@ -129,8 +151,6 @@ namespace IKVM.Reflection.Emit.Metadata
             throw new NotImplementedException();
         }
 
-#if NET5_0_OR_GREATER
-
         public override MethodBuilder DefinePInvokeMethod(string name, string dllName, MethodAttributes attributes, CallingConventions callingConvention, Type? returnType, Type[]? parameterTypes, CallingConvention nativeCallConv, CharSet nativeCharSet)
         {
             throw new NotImplementedException();
@@ -145,8 +165,6 @@ namespace IKVM.Reflection.Emit.Metadata
         {
             throw new NotImplementedException();
         }
-
-#endif
 
         public override PropertyBuilder DefineProperty(string name, PropertyAttributes attributes, Type returnType, Type[]? parameterTypes)
         {

@@ -1,6 +1,4 @@
-﻿using System.Reflection.Emit;
-
-namespace IKVM.Reflection.Emit.Reflection
+﻿namespace IKVM.Reflection.Emit.Reflection
 {
 
     internal class ReflectionEventBuilder : EventBuilder
@@ -67,8 +65,8 @@ namespace IKVM.Reflection.Emit.Reflection
             throw new ArgumentException("SetRemoveOnMethod requires a MethodBuilder derived from the Reflection provider.");
         }
 
+        /// <inheritdoc />
         public override string ToString() => Wrapped.ToString();
-
     }
 
 }

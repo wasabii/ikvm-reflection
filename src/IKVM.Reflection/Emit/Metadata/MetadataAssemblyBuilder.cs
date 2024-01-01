@@ -1,5 +1,4 @@
-﻿
-using System.Resources;
+﻿using System.Resources;
 
 namespace IKVM.Reflection.Emit.Metadata
 {
@@ -19,17 +18,15 @@ namespace IKVM.Reflection.Emit.Metadata
             this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public override string Location => throw new NotImplementedException();
+        public override IEnumerable<TypeBuilder> DefinedTypes => throw new NotImplementedException();
 
-        public override IEnumerable<TypeInfo> DefinedTypes => throw new NotImplementedException();
-
-        public override IEnumerable<Type> ExportedTypes => throw new NotImplementedException();
+        public override IEnumerable<TypeBuilder> ExportedTypes => throw new NotImplementedException();
 
         public override string ImageRuntimeVersion => throw new NotImplementedException();
 
         public override Module ManifestModule => throw new NotImplementedException();
 
-        public override MethodInfo? EntryPoint => throw new NotImplementedException();
+        public override MethodBuilder? EntryPoint => throw new NotImplementedException();
 
         public override void AddResourceFile(string name, string fileName)
         {
@@ -81,22 +78,22 @@ namespace IKVM.Reflection.Emit.Metadata
             throw new NotImplementedException();
         }
 
-        public override Type[] GetForwardedTypes()
+        public override TypeBuilder[] GetForwardedTypes()
         {
             throw new NotImplementedException();
         }
 
-        public override Module? GetModule(string name)
+        public override ModuleBuilder? GetModule(string name)
         {
             throw new NotImplementedException();
         }
 
-        public override Module[] GetModules()
+        public override ModuleBuilder[] GetModules()
         {
             throw new NotImplementedException();
         }
 
-        public override Module[] GetModules(bool getResourceModules)
+        public override ModuleBuilder[] GetModules(bool getResourceModules)
         {
             throw new NotImplementedException();
         }
@@ -106,27 +103,22 @@ namespace IKVM.Reflection.Emit.Metadata
             throw new NotImplementedException();
         }
 
-        public override AssemblyName GetName(bool copiedName)
+        public override TypeBuilder? GetType(string name, bool throwOnError, bool ignoreCase)
         {
             throw new NotImplementedException();
         }
 
-        public override Type? GetType(string name, bool throwOnError, bool ignoreCase)
+        public override TypeBuilder? GetType(string name, bool throwOnError)
         {
             throw new NotImplementedException();
         }
 
-        public override Type? GetType(string name, bool throwOnError)
+        public override TypeBuilder? GetType(string name)
         {
             throw new NotImplementedException();
         }
 
-        public override Type? GetType(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Type[] GetTypes()
+        public override TypeBuilder[] GetTypes()
         {
             throw new NotImplementedException();
         }
@@ -151,12 +143,12 @@ namespace IKVM.Reflection.Emit.Metadata
             throw new NotImplementedException();
         }
 
-        public override void SetEntryPoint(MethodInfo entryMethod)
+        public override void SetEntryPoint(MethodBuilder entryMethod)
         {
             throw new NotImplementedException();
         }
 
-        public override void SetEntryPoint(MethodInfo entryMethod, PEFileKinds fileKind)
+        public override void SetEntryPoint(MethodBuilder entryMethod, PEFileKinds fileKind)
         {
             throw new NotImplementedException();
         }

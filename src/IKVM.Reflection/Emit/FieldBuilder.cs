@@ -6,6 +6,14 @@ namespace IKVM.Reflection.Emit
     public abstract class FieldBuilder
     {
 
+        public static bool operator ==(FieldBuilder? left, FieldInfo? right) => Equals(left?.AsFieldInfo(), right);
+
+        public static bool operator !=(FieldBuilder? left, FieldInfo? right) => Equals(left?.AsFieldInfo(), right) == false;
+
+        /// <summary>
+        /// Returns a <see cref="FieldInfo"/> instance that represents the field being generated.
+        /// </summary>
+        /// <param name="builder"></param>
         public static implicit operator FieldInfo(FieldBuilder builder) => builder.AsFieldInfo();
 
         public abstract void SetConstant(object? defaultValue);
@@ -23,6 +31,12 @@ namespace IKVM.Reflection.Emit
         /// </summary>
         /// <returns></returns>
         protected abstract FieldInfo AsFieldInfo();
+
+        /// <inheritdoc />
+        public override bool Equals(object? obj) => object.ReferenceEquals(this, obj);
+
+        /// <inheritdoc />
+        public override int GetHashCode() => base.GetHashCode();
 
     }
 

@@ -1,5 +1,4 @@
-﻿
-namespace IKVM.Reflection.Emit.Reflection
+﻿namespace IKVM.Reflection.Emit.Reflection
 {
 
     internal class ReflectionParameterBuilder : ParameterBuilder

@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Reflection.Emit;
 
 namespace IKVM.Reflection.Emit.Reflection
 {
